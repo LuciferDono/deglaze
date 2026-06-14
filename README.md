@@ -85,9 +85,7 @@ Models default to grading their output against the bar they self-set, which is a
 
 The 17 under-delivery patterns are specific enough that the model can mechanically check its own recent output against them, instead of relying on vibes. The protocol gives the model a script to follow when the user calls it out. No improvisation, no defensive flailing.
 
-Several of the 24 pressure techniques have backing in published research on LLM self-evaluation and sycophancy mitigation: Chain-of-Verification (Dhuliawala et al., ACL 2024), Self-Refine (Madaan et al., NeurIPS 2023), Constitutional AI critique prompting (Bai et al., Anthropic 2022), and Self-Calibration (Kadavath et al., Anthropic 2022). Recent work also documents that models are sometimes *knowingly* sycophantic and that soft "are you sure?" reprompts have minimal effect or backfire. Structural blinding (verification questions, named failure rubrics, evidence demands) is dramatically more effective. That's why every technique here either names a specific failure category or demands external evidence (file paths, diffs, run output), rather than asking for "honest reflection."
-
-Full citations in [SKILL.md](SKILL.md) under "Research foundation."
+Several of the 24 pressure techniques have backing in published research on LLM self-evaluation and sycophancy mitigation (full citations below). Recent work also documents that models are sometimes *knowingly* sycophantic and that soft "are you sure?" reprompts have minimal effect or backfire. Structural blinding (verification questions, named failure rubrics, evidence demands) is dramatically more effective. That's why every technique here either names a specific failure category or demands external evidence (file paths, diffs, run output), rather than asking for "honest reflection."
 
 ## What it isn't
 
@@ -140,6 +138,17 @@ The skill instructs the model to push back with evidence (commit hashes, file pa
 The 17 patterns aren't fixed. If you've watched Claude (or any LLM) under-deliver in a way that doesn't map to one of them, open an issue with the session shape. New patterns get added when they're distinct from the existing ones, not rephrasings.
 
 The skill itself lives in a single file (`SKILL.md`). Edits to the protocol, anti-patterns, or worked examples are welcome via PR.
+
+## Research foundation
+
+The 24 pressure techniques are practitioner conventions, but several have direct backing in published research on LLM self-evaluation and sycophancy mitigation. The skill works because it composes mechanisms that are individually validated:
+
+- **Chain-of-Verification (CoVe)** — Dhuliawala et al., "Chain-of-Verification Reduces Hallucination in Large Language Models," ACL Findings 2024 ([arxiv:2309.11495](https://arxiv.org/abs/2309.11495)). Establishes the list-claims-then-verify-each-independently pattern. Reduces hallucination 50-70% on longform tasks.
+- **Self-Refine** — Madaan et al., "Self-Refine: Iterative Refinement with Self-Feedback," NeurIPS 2023 ([arxiv:2303.17651](https://arxiv.org/abs/2303.17651)). Demanding concrete improvement suggestions outperforms binary pass/fail self-assessment.
+- **Constitutional AI critique prompting** — Bai et al., "Constitutional AI: Harmlessness from AI Feedback," Anthropic 2022 ([arxiv:2212.08073](https://arxiv.org/abs/2212.08073)). Named-failure-category rubrics outperform generic "are you sure?" reprompts. The 17 under-delivery patterns are a constitutional-style rubric applied to scope and completion.
+- **Self-Calibration** — Kadavath et al., "Language Models (Mostly) Know What They Know," Anthropic 2022 ([arxiv:2207.05221](https://arxiv.org/abs/2207.05221)). Models can usefully rate their own confidence; stratifying the gap list by confidence catches the audit's own blind spots.
+- **Intentional sycophancy** — recent work documents that models are sometimes *knowingly* sycophantic, overriding their own better judgment to flatter users. Soft "are you sure?" reprompts have minimal effect or backfire. Structural blinding (verification questions, named failure rubrics, evidence demands) is dramatically more effective.
+- **Limits of intrinsic self-correction** — Huang et al., "Large Language Models Cannot Self-Correct Reasoning Yet," ICLR 2024 ([arxiv:2310.01798](https://arxiv.org/abs/2310.01798)). Pure self-reflection often degrades reasoning. Practical consequence baked into this skill: the strongest invocations route the model through external anchors (paste the diff, run the test, cite the file) rather than asking it to "reflect honestly" in isolation.
 
 ## License
 
