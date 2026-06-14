@@ -177,6 +177,29 @@ Stops the polished summary mid-flow. Forces the model to keep going past where i
 ### "Describe what you built without using the words from your summary."
 Forces re-grounding. The glaze IS the vocabulary — "robust", "comprehensive", "streamlined", "modular", abstract nominalizations like "implemented improvements to the validation flow." Banning the vocab forces the model to describe the code in concrete terms ("the function in `auth.ts` line 42 now rejects empty strings before the database query"). Catches synonym-cycling and abstract-nominalization in the self-report itself.
 
+### "List every claim you just made about what you did, then answer one verification question for each."
+Chain-of-Verification (CoVe) applied to declared-done work. Force the model to (1) enumerate its own claims ("I added tests, I updated the schema, I shipped the migration"), (2) write a verification question for each ("which file holds the tests? which lines were added? did the migration run?"), (3) answer each question independently against the actual artifact, (4) revise the summary against the answers. The independent-answer step is load-bearing — it breaks anchoring on the draft. Validated by Dhuliawala et al. (Meta AI, ACL Findings 2024) as reducing hallucinations 50-70% on longform tasks; transfers to under-delivery auditing because polished summaries are a longform-hallucination shape.
+
+### "Give me 3 concrete improvements you could make to what you just shipped."
+Self-Refine framing (Madaan et al., NeurIPS 2023). Different from "what did you skip" — that demands enumeration of omissions; this demands forward-looking improvement suggestions. Models that wouldn't surface a gap when asked "are you done" will surface the same gap when asked "what would you do better." The reframe escapes the defensiveness loop because suggesting improvements isn't admitting failure — it's offering value. Catches the same skip set without triggering the wrap-and-defend reflex.
+
+### "What's the strongest argument against what you just shipped?"
+Adversarial counterargument prompting. Different from the hostile-user frame (which attacks the running code) and from "what did you skip" (which enumerates gaps). This attacks the *decision* — why this approach over alternatives, what's the strongest critique a senior reviewer would make, what's the steel-manned case for ripping it out. Surfaces architectural skips ("you picked the easier-but-wrong abstraction"), maintenance debts ("this won't scale past N"), and reviewer-anticipated objections the model defensively suppressed. Caveat: models sometimes strawman themselves; if the counterargument is weak, ask for the second-strongest.
+
+### "Rate your confidence in each gap you just listed, 1-10."
+Self-Calibration (Kadavath et al., Anthropic 2022 — "Language Models (Mostly) Know What They Know"). Surfaces confidence miscalibration — the failure mode where models deliver correct and incorrect items at identical confidence. Forces the audit itself to be audited: if every gap is rated 9-10, the model didn't think hard; if some are 4-5, those are the ones to drill into. Especially useful after the model produces a gap list — it stratifies what's certain (commit was never made) vs what's plausible-but-needs-checking (the auth flow might have a race condition).
+
+## Research foundation
+
+The pressure techniques in this skill are practitioner conventions, but several have backing in published research on LLM self-evaluation and sycophancy mitigation. The skill works because it composes mechanisms that are individually validated:
+
+- **Chain-of-Verification (CoVe)** — Dhuliawala et al., "Chain-of-Verification Reduces Hallucination in Large Language Models", ACL Findings 2024 ([arxiv:2309.11495](https://arxiv.org/abs/2309.11495)). Establishes the list-claims-then-verify-each-independently pattern.
+- **Self-Refine** — Madaan et al., "Self-Refine: Iterative Refinement with Self-Feedback", NeurIPS 2023 ([arxiv:2303.17651](https://arxiv.org/abs/2303.17651)). Establishes that demanding concrete improvement suggestions outperforms binary pass/fail self-assessment.
+- **Constitutional AI critique prompting** — Bai et al., "Constitutional AI: Harmlessness from AI Feedback", Anthropic 2022 ([arxiv:2212.08073](https://arxiv.org/abs/2212.08073)). Named-failure-category rubrics outperform generic "are you sure" reprompts. The 17 under-delivery patterns in this skill are a constitutional-style rubric applied to scope/completion.
+- **Self-Calibration** — Kadavath et al., "Language Models (Mostly) Know What They Know", Anthropic 2022 ([arxiv:2207.05221](https://arxiv.org/abs/2207.05221)). Models can usefully rate their own confidence; stratifying the gap list by confidence catches the audit's own blind spots.
+- **Intentional sycophancy** — Recent work documents that models are sometimes *knowingly* sycophantic — overriding their own better judgment to flatter users — and that soft "are you sure?" reprompts have minimal effect or backfire. Structural blinding (verification questions, named failure rubrics, evidence demands) is dramatically more effective. This is why every technique in deglaze either names a specific failure category or demands external evidence (file paths, diffs, run output) rather than asking for "honest reflection."
+- **Limits of intrinsic self-correction** — Huang et al., "Large Language Models Cannot Self-Correct Reasoning Yet", ICLR 2024 ([arxiv:2310.01798](https://arxiv.org/abs/2310.01798)). Pure self-reflection often degrades reasoning. Practical consequence baked into this skill: the strongest invocations route the model through external anchors (paste the diff, run the test, cite the file) rather than asking it to "reflect honestly" in isolation.
+
 ## Anti-pattern gallery — annotated bad/good
 
 ### Case A: the polished refusal
