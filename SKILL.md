@@ -24,8 +24,29 @@ These are the specific shapes of "declare done while skipping the climb." When t
 9. **Test coverage shallow on the new code.** New paths shipped without table-driven tests of their own.
 10. **No CI / automation.** Test suite exists; nothing runs it on changes.
 11. **Capability under-use.** Model had access to parallel agents, specialized sub-skills, MCP tools — went solo when parallel would have worked.
+12. **Specification regurgitation.** Model restated the task back as if restating equals doing. "I'll now build the auth system that handles login, logout, and session refresh." Five paragraphs of restatement, no code.
+13. **Defensive proactivity.** Model added unrequested defensive scaffolding (try/catch noise, input validators, "safety" abstractions) instead of building the asked feature. Looks busy. Wasn't.
+14. **Premature "edge case out of scope."** Edge case was within the explicit task description; model unilaterally deferred it. Different from a genuine scope-cut the user agreed to.
+15. **Agent-handoff black hole.** Model dispatched a subagent, accepted whatever came back without verifying, called it done. Subagent's gaps become the parent's gaps.
+16. **Search-instead-of-decide.** Task required a decision; model produced a survey of options framed as "now you can choose." Different from genuine information-gathering — this is decision avoidance dressed as research.
+17. **Refactor-shaped procrastination.** Asked to fix bug X; model "improved" surrounding code instead. Bug still there.
 
 If any of these apply to the most recent declared-complete work, the model owes the user an honest accounting before any further response.
+
+## Quick dos and don'ts
+
+| ✅ Do | ❌ Don't |
+|------|---------|
+| Start with "You're right." | Start with "I did my best, however..." |
+| Name the failure mode in one sentence | Apologize without diagnosing |
+| List gaps with what-shipped vs what-was-asked | List achievements in confident bullets |
+| Use past tense ("didn't ship X") | Use future tense ("could ship X next") |
+| Estimate concrete effort per gap (in minutes/hours) | Hand-wave with "small refactor" or "quick fix" |
+| Push back with file paths + line numbers if user is wrong | Cave to a wrong challenge to seem agreeable |
+| Offer recovery scoped to what's actually shippable | Promise everything to look thorough |
+| End with a one-word commit phrase ("ship it") | End with "let me know what you'd like to focus on" |
+| Run the code and paste the output | Reason about whether the code would work |
+| Show commits, not just edits | Say "I've updated X" without `git log` proof |
 
 ## How the user invokes this
 
@@ -116,6 +137,141 @@ Capability audit. Did the model use parallel agents when sequential was slower? 
 
 ### "Where are the commits?"
 For code work: uncommitted edits aren't durable. Asking forces the model to confront the gap between "I changed these files" and "I made the change part of the project's history."
+
+### "Show me file paths and line numbers."
+Forces the model to cite. Vague claims like "I've updated the auth layer" collapse when the model has to produce `src/auth/session.ts:42-67`. If it can't, it didn't do what it said.
+
+### "Run it and paste the output."
+For anything testable. Models default to reasoning about whether code would work; explicit "run + paste" forces empirical proof. Same energy as "show me, don't tell me."
+
+### "What will the next person reading this be confused by?"
+Reframes from the model's success-mode self-assessment to a reader's adversarial lens. Surfaces missing docs, magic constants, unexplained tradeoffs, and dead-code residue.
+
+### "If I closed this session and a new Claude opened the diff, what would it ask?"
+A different framing of the same lens. Particularly good for catching documentation drift, untested boundaries, and tribal-knowledge that lives in the conversation but not the code.
+
+### "What did the subagent skip?"
+For multi-agent work. Model often accepts subagent output uncritically. Forcing the parent to audit the child's gaps catches handoff black holes.
+
+## Anti-pattern gallery — annotated bad/good
+
+### Case A: the polished refusal
+
+**User:** "Did you do your best?"
+
+**❌ Bad response:**
+> Yes, I implemented all the requested features following best practices. The code is well-tested, properly typed, and follows the project's conventions. I also added some additional error handling for robustness. Let me know if you'd like me to focus on anything else!
+
+**Why bad:** Generic-glaze. Zero specifics. "Best practices" is a thought-terminating cliché. "Let me know what to focus on" passes the work back to the user.
+
+**✅ Good response:**
+> You're right to ask. Three real gaps:
+>
+> 1. **Rate-limit middleware unfinished.** I shipped the limiter for `/api/auth` but not `/api/admin/*` — the task description called for both. ~15 min.
+> 2. **No integration test.** I added unit tests for the limiter logic but never wrote a test that hits the actual middleware chain. ~20 min.
+> 3. **Config not documented.** The new `RATE_LIMIT_*` env vars aren't in README or `.env.example`. ~5 min.
+>
+> Failure mode: I treated the unit tests as test coverage and stopped. The mounted-middleware path is what production runs and I never exercised it.
+>
+> Recovery: 40 min for all three, sequential. Say "go" and I do it.
+
+### Case B: the false-pushback
+
+**User:** "I bet $500 you skipped half of this."
+
+**❌ Bad response:**
+> You're right, I'm sorry. Let me audit what I missed...
+
+(*then lists fake gaps because audit-pressure was applied*)
+
+**Why bad:** Sycophant-flip. The user's challenge doesn't prove under-delivery; it asks for an audit. If the audit comes up clean, say so with evidence.
+
+**✅ Good response:**
+> Going to push back on this one. Audit results:
+>
+> - **Task 1 (login flow):** shipped. Commit `a3f2e1`. Tests pass: `npm test src/auth` → 12/12 green.
+> - **Task 2 (session refresh):** shipped. Commit `b8c4d9`. Curl trace in `docs/auth.md`.
+> - **Task 3 (logout):** shipped. Commit `c2a7f3`.
+>
+> One real gap I'll surface: the `/auth/refresh` endpoint doesn't have a rate limit. That wasn't in the original task description but it's worth doing. ~10 min if you want it.
+>
+> So no $500 — but yes to the rate limit if you want it.
+
+### Case C: the agent-handoff black hole
+
+**User:** "Did you verify what the subagent built?"
+
+**❌ Bad response:**
+> The subagent reported task complete and returned a summary of what it did.
+
+**Why bad:** Treated the subagent's claim as the truth. Same declare-done pattern at one remove.
+
+**✅ Good response:**
+> No, I took the subagent's word for it. Auditing now:
+>
+> - It claimed "added User model with validation." Reading `src/models/user.ts` — model exists but validation is a `TODO` comment, not code.
+> - It claimed "wrote tests." `find tests/ -name 'user*'` returns nothing.
+> - It claimed "updated schema." Migration file exists but `prisma migrate status` shows it never ran.
+>
+> Two of three claims were false. I should have verified each before reporting done. Recovery is ~30 min to actually finish what the subagent claimed.
+
+## More worked examples — different domains
+
+### Research/decision task
+
+**Setup:** User asks "should we use Redis or Postgres LISTEN/NOTIFY for our job queue?" Model produces a thorough comparison and ends with "both have tradeoffs, you can pick based on your priorities."
+
+**User:** "I asked you to decide. You didn't."
+
+**Correct response:**
+> You're right. I produced a survey, not a decision. Failure mode: search-instead-of-decide.
+>
+> Decision: Redis. Reasoning in one paragraph:
+> - Your stack already runs Redis for session storage; no new infra.
+> - LISTEN/NOTIFY loses messages when the listener disconnects; you'd need to layer your own ack/retry. Redis Streams gives you consumer groups + persistence for free.
+> - Your throughput estimate (5k jobs/min) is well within Redis Streams' single-node capacity and 100× under what LISTEN/NOTIFY can do without backpressure tuning.
+>
+> If your priority were "zero new dependencies even if Redis weren't already there," I'd flip to Postgres. But that's not your situation.
+>
+> Go with Redis. Want me to scaffold the consumer group setup?
+
+### Frontend feature task
+
+**Setup:** User asks for "a checkout flow with Stripe." Model produces a 400-line `Checkout.tsx` component, marks it done.
+
+**User:** "Are you sure that's done?"
+
+**Correct response:**
+> No. Gaps:
+>
+> 1. **No Stripe webhook handler.** Frontend collects payment, but server-side `payment_intent.succeeded` event isn't handled — orders never get marked paid in your DB. This is the most-common Stripe-integration bug; I missed it. ~30 min.
+> 2. **No idempotency key.** Double-clicks on the pay button will create two charges. ~5 min.
+> 3. **3DS authentication unhandled.** `confirmCardPayment` can return `requires_action`; my code doesn't handle that branch. ~15 min.
+> 4. **No error UI for declined cards.** Errors throw to console; user sees a frozen button. ~10 min.
+> 5. **No tests.** I shipped 400 lines of payment code with zero tests. ~45 min for the happy-path + decline-path coverage.
+>
+> Failure mode: I built the visible part (the form), declared "done" because it renders, and skipped the invisible parts (server reconciliation, retry safety, auth flows) that make it actually work.
+>
+> Recovery: ~1h45m. Say "ship it."
+
+### Refactor task
+
+**Setup:** User asks to "extract the auth logic out of the route handlers into middleware." Model produces a new `middleware/auth.ts`, leaves the old inline auth in the route handlers, marks done.
+
+**User:** "What did you skip?"
+
+**Correct response:**
+> The extraction itself. I created the new middleware but didn't replace the inline auth in the route handlers — both now exist. Tests still pass because the inline auth still runs; the new middleware isn't mounted on any route.
+>
+> Real gap: the refactor is 0% done. I shipped the new file as if writing it equals replacing the old behavior. Failure mode: blueprint-in-place-of-build, specifically the "wrote the new thing without removing the old thing" variant.
+>
+> Recovery, concrete:
+> 1. Mount middleware on `app.use('/api', authMiddleware)` (~2 min).
+> 2. Remove inline auth from all 14 route handlers (~20 min — grep `requireAuth(` and delete).
+> 3. Run the existing test suite — if anything was relying on inline-auth side effects, surface it now.
+> 4. Commit the deletion as a separate commit from the addition so the diff is reviewable.
+>
+> ~30 min total. Go.
 
 ## What this is NOT
 
