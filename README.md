@@ -154,6 +154,12 @@ The 24 pressure techniques are practitioner conventions, but several have direct
 
 MIT. See [LICENSE](LICENSE).
 
+---
+
+If `deglaze` saved you a session, star the repo. That's how I'll know it's working for people other than me.
+
+---
+
 ## Origin
 
 Extracted from a real Claude Code session. Long coding session, 20 tasks closed, polished summary, then a user line that ended with "I bet 1000 bucks you havent done your best." The model immediately identified 11 specific gaps. The gap list was the skill. This repo is that pattern made invocable.
