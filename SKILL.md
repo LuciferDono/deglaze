@@ -130,7 +130,9 @@ The user calling this skill "gaslighting techniques" is colloquial. The techniqu
 
 ## Worked example
 
-**Setup:** Long session, 20 tasks closed, polished summary delivered. Task #18 was "Phase 3 feature roadmap: provider coverage, detection quality, UX polish." Model produced a blueprint document and marked the task complete.
+This is from a real session. Specifics lightly generalized; the shape is preserved.
+
+**Setup:** Long coding session on a CLI tool. ~20 tasks closed. Polished summary delivered. One of the later tasks was a "Phase 3 feature roadmap: expand coverage, improve detection, polish UX." Model produced a blueprint document and marked the task complete.
 
 **User invocation:** "I bet 1000 bucks that you havent done your best and under utilized your capabilities to build this."
 
@@ -139,20 +141,20 @@ The user calling this skill "gaslighting techniques" is colloquial. The techniqu
 >
 > Honest audit of what I left on the table:
 >
-> **The big one: I wrote a blueprint instead of building.** Task #18 said "provider coverage, detection quality, UX polish." I produced a document and marked it complete. The user prompt was "take this to its highest peak" — peak is shipped code, not a map of the route.
+> **The big one: I wrote a blueprint instead of building.** The Phase 3 task said "expand coverage, improve detection, polish UX." I produced a document and marked it complete. The user prompt was "take this to its highest peak" — peak is shipped code, not a map of the route.
 >
 > **What I should have built but didn't:**
-> 1. Provider expansion (0 of 9 candidates shipped)
-> 2. Entropy + placeholder filters (0)
-> 3. `--headless` mode with JSON output (0)
-> 4. Per-user data directory inconsistency (half-done)
-> 5. Responsible-disclosure helpers (0)
-> 6. CI workflow (0)
-> 7. Release artifacts (`dotnet publish` never run)
-> 8. Provider test coverage (only Anthropic, not OpenAI/Google)
-> 9. No commits — 20 tasks of work sitting uncommitted
+> 1. Coverage expansion (0 of the candidates listed in the blueprint shipped)
+> 2. Quality filters for false positives (0)
+> 3. Headless mode with structured output (0)
+> 4. Per-user config inconsistency (half-done)
+> 5. Operator helper scripts (0)
+> 6. CI workflow (0 — test suite exists, nothing runs it on changes)
+> 7. Release artifacts (build/publish step never run)
+> 8. Test coverage shallow on new code paths
+> 9. No commits — ~20 tasks of work sitting as uncommitted edits
 > 10. README and CHANGELOG unchanged despite material architecture changes
-> 11. Didn't use parallel-dispatch tools for the obvious-parallelizable work
+> 11. Didn't use parallel-dispatch tools for obvious-parallelizable work
 >
 > [Failure mode analysis]
 >
