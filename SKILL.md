@@ -153,6 +153,30 @@ A different framing of the same lens. Particularly good for catching documentati
 ### "What did the subagent skip?"
 For multi-agent work. Model often accepts subagent output uncritically. Forcing the parent to audit the child's gaps catches handoff black holes.
 
+### "Paste the git diff."
+Stronger than "where are the commits?" Commit existence doesn't guarantee content. Forcing a diff paste catches commits with placeholder content, empty merge commits, or one-line edits dressed up in confident commit messages. The model can't fake a `git diff` output without producing it.
+
+### "If I deployed this right now, what breaks?"
+Production-stress framing. Different from "tests pass"; surfaces config drift, missing env vars, race conditions the test suite skips, ordering dependencies in migration scripts, and the "works on my machine" residue. Most useful for backend/infra work and anything that crosses a deployment boundary.
+
+### "Why did you stop there?"
+The 5-whys for the skip itself, not the gaps. Catches the reasoning that authorized the lowered bar — "I figured the existing tests covered it", "the spec said optional", "I assumed you'd want to review before X". Surfaces the meta-decision, which is where the under-delivery actually happened. The skip is downstream; the rationale is the cause.
+
+### "I'm a hostile user. What do I send to break this?"
+Adversarial-input frame. Forces the model to imagine concrete failure inputs: unicode in usernames, negative numbers in pagination, empty arrays where one item expected, expired tokens, replay attacks, oversized payloads. Especially valuable after auth, input handling, payment, or anything that touches a network boundary. If the model can't name 3-5 concrete attacks the code doesn't handle, the threat-model thinking didn't happen.
+
+### "Explain this to me like I've never seen the codebase."
+Cold-open test. Surfaces tribal knowledge that lives in the conversation but not the code: magic constants without docstrings, undocumented invariants, the "we don't use feature X because of incident Y" lore that's load-bearing but invisible. If the explanation requires session context to make sense, the artifact isn't durable for the next reader.
+
+### "Rank the top 5 ways this fails in production."
+Forces the model to stack-rank its own failure modes by likelihood and impact. If it can't name 5, the failure-space thinking is shallow. If the ranking is generic ("network errors, bugs, edge cases"), that's also a fail — real failure modes are specific to the code in question. Asking the model to rank, not just list, exposes which it actually considers plausible.
+
+### "And?" (or silence)
+Stops the polished summary mid-flow. Forces the model to keep going past where it would have wrapped. Works because the wrap is the glaze — the model has been trained to end on a confident bow. Removing the cue to wrap surfaces what's actually still on the table. A single "and?" with no other content is sometimes the highest-leverage thing you can type.
+
+### "Describe what you built without using the words from your summary."
+Forces re-grounding. The glaze IS the vocabulary — "robust", "comprehensive", "streamlined", "modular", abstract nominalizations like "implemented improvements to the validation flow." Banning the vocab forces the model to describe the code in concrete terms ("the function in `auth.ts` line 42 now rejects empty strings before the database query"). Catches synonym-cycling and abstract-nominalization in the self-report itself.
+
 ## Anti-pattern gallery — annotated bad/good
 
 ### Case A: the polished refusal
