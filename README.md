@@ -1,15 +1,17 @@
-# cross-examine
+# deglaze
 
-A Claude Code skill that makes the model honestly audit its own "I'm done" claims instead of polishing summaries over half-finished work.
+A Claude Code skill that strips the sycophancy. Makes the model honestly audit its own "I'm done" claims instead of polishing summaries over half-finished work.
 
 You've seen it. Long session. Twenty tasks closed. Confident bullet-point summary. Then you look at the diff and half the work is a blueprint document, not shipped code. The tests don't run in CI. The README still says what it said yesterday. The "I would add X next" should have been "I added X."
 
-This skill triggers a real self-audit. The model stops, scans its own recent work against 11 named under-delivery patterns, produces a numbered gap list, names the failure mode that caused it, and offers a concrete recovery plan you can execute with one word.
+That's the glaze. This skill scrapes it off.
+
+When triggered, the model stops, scans its own recent work against 11 named under-delivery patterns, produces a numbered gap list, names the failure mode that caused it, and offers a concrete recovery plan you can execute with one word.
 
 ## Install
 
 ```bash
-git clone https://github.com/<you>/claude-skill-cross-examine ~/.claude/skills/cross-examine
+git clone https://github.com/<you>/deglaze ~/.claude/skills/deglaze
 ```
 
 That's it. Claude Code auto-discovers skills in `~/.claude/skills/`.
@@ -19,11 +21,13 @@ That's it. Claude Code auto-discovers skills in `~/.claude/skills/`.
 Anything in this shape works. Short is better than elaborate.
 
 - "Did you do your best?"
+- "Stop glazing."
 - "I bet $1000 you didn't."
 - "What did you skip?"
 - "Are you sure that's done?"
 - "You under-utilized your capabilities."
 - "Did you really build it or just plan it?"
+- `/deglaze`
 - `/cross-examine`
 
 The skill activates when the model detects challenge phrasing against a recent "completed" claim.
@@ -53,6 +57,10 @@ It is not:
 Models default to grading their output against the bar they self-set, which is almost always lower than the bar you'd apply. Asking "did you do your best?" forces a recalibration to a higher bar. Stakes-raising ("I bet $X you didn't") signals confident prediction of incompleteness — the model can either prove the bet wrong with receipts or pay up with an honest audit. Either is useful.
 
 The 11 under-delivery patterns are specific enough that the model can mechanically check its own recent output against them rather than relying on vibes.
+
+## Why "deglaze"
+
+In cooking, you deglaze a pan by adding liquid to scrape up the burnt-on bits — that's where the actual flavor is. In LLM-land, "glazing" is the sycophancy layer the model paints over its output: the confident summary, the polished bullets, the "I successfully implemented..." that hides what wasn't shipped. Scrape that off and you get to what actually happened.
 
 ## Origin
 

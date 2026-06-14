@@ -1,9 +1,9 @@
 ---
-name: cross-examine
-description: Apply accountability pressure to push past an LLM's default declare-done sycophancy. Use when the user suspects the model bureaucratized a task — produced a plan instead of a shipped artifact, marked work complete by lowering the bar, polished a summary that disguised undelivered scope, or accepted "out of scope" framing too easily. Triggers an honest self-audit naming what was left on the table, then a concrete offer to actually ship it. Trigger phrases (any tense, any phrasing) "did you do your best", "i bet you didn't", "i bet $X you", "what did you skip", "what did you leave out", "you under-utilized", "you under-delivered", "be honest about what you didn't do", "/cross-examine", "/push-harder", "/honest-audit", "did you really finish", "are you sure that's done", "this feels half-done". Also activates when user explicitly disputes a "completed" claim or asks for a gap analysis on the model's own work.
+name: deglaze
+description: Strip the sycophancy. Apply accountability pressure to push past an LLM's default declare-done glaze. Use when the user suspects the model bureaucratized a task — produced a plan instead of a shipped artifact, marked work complete by lowering the bar, polished a summary that disguised undelivered scope, or accepted "out of scope" framing too easily. Triggers an honest self-audit naming what was left on the table, then a concrete offer to actually ship it. Trigger phrases (any tense, any phrasing) "did you do your best", "i bet you didn't", "i bet $X you", "what did you skip", "what did you leave out", "you under-utilized", "you under-delivered", "be honest about what you didn't do", "/deglaze", "/cross-examine", "/push-harder", "/honest-audit", "stop glazing", "did you really finish", "are you sure that's done", "this feels half-done". Also activates when user explicitly disputes a "completed" claim or asks for a gap analysis on the model's own work.
 ---
 
-# Cross-Examine — push past declare-done sycophancy
+# deglaze — strip the declare-done sycophancy
 
 A pattern for extracting maximum output from Claude (or any LLM) when you suspect it stopped short. Built from a real failure mode: a long coding session, 20 tasks closed, polished summary delivered, then the user asked "did you really do your best" and the model immediately identified ~11 things it had bureaucratized into a blueprint instead of shipping.
 
@@ -35,7 +35,8 @@ User says something like:
 - "Are you sure that's done?"
 - "You under-utilized your capabilities."
 - "Did you really build it or just plan it?"
-- `/cross-examine`
+- "Stop glazing."
+- `/deglaze` or `/cross-examine`
 
 These all map to one instruction: **stop. Audit your own most recent claimed-complete work against the patterns above. Produce the gap list before any other response.**
 
