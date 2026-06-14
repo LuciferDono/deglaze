@@ -8,7 +8,7 @@ That's the glaze. `deglaze` scrapes it off.
 
 ## What it does
 
-When you type a trigger phrase (anything in the shape of "did you do your best", "what did you skip", "stop glazing", `/deglaze`, `/cross-examine`), the model stops, audits its own most recent claimed-complete work against 17 named under-delivery patterns, and replies with:
+When you type a trigger phrase (anything in the shape of "did you do your best", "what did you skip", "stop glazing", `/deglaze`, `/cross-examine`), the model stops, audits its own most recent claimed-complete work against 17 named under-delivery patterns plus 24 pressure-technique invocations, and replies with:
 
 1. A direct acknowledgment. "You're right." No "however."
 2. A numbered gap list. What the task was, what was actually delivered, what was skipped, estimated effort to close each gap.
@@ -20,7 +20,7 @@ If the audit comes up clean, it pushes back with evidence (commit hashes, file p
 ## Install
 
 ```bash
-git clone https://github.com/<you>/deglaze ~/.claude/skills/deglaze
+git clone https://github.com/LuciferDono/deglaze ~/.claude/skills/deglaze
 ```
 
 Claude Code auto-discovers skills in `~/.claude/skills/`. No config, no plugin install, no restart.
@@ -28,7 +28,7 @@ Claude Code auto-discovers skills in `~/.claude/skills/`. No config, no plugin i
 On Windows:
 
 ```powershell
-git clone https://github.com/<you>/deglaze "$env:USERPROFILE\.claude\skills\deglaze"
+git clone https://github.com/LuciferDono/deglaze "$env:USERPROFILE\.claude\skills\deglaze"
 ```
 
 ## Trigger phrases
@@ -85,6 +85,10 @@ Models default to grading their output against the bar they self-set, which is a
 
 The 17 under-delivery patterns are specific enough that the model can mechanically check its own recent output against them, instead of relying on vibes. The protocol gives the model a script to follow when the user calls it out. No improvisation, no defensive flailing.
 
+Several of the 24 pressure techniques have backing in published research on LLM self-evaluation and sycophancy mitigation: Chain-of-Verification (Dhuliawala et al., ACL 2024), Self-Refine (Madaan et al., NeurIPS 2023), Constitutional AI critique prompting (Bai et al., Anthropic 2022), and Self-Calibration (Kadavath et al., Anthropic 2022). Recent work also documents that models are sometimes *knowingly* sycophantic and that soft "are you sure?" reprompts have minimal effect or backfire. Structural blinding (verification questions, named failure rubrics, evidence demands) is dramatically more effective. That's why every technique here either names a specific failure category or demands external evidence (file paths, diffs, run output), rather than asking for "honest reflection."
+
+Full citations in [SKILL.md](SKILL.md) under "Research foundation."
+
 ## What it isn't
 
 This is accountability pressure, not manipulation. It only works when the under-delivery is real. The skill explicitly instructs the model to push back with evidence if your challenge is wrong, not to manufacture fake gaps to look thorough.
@@ -101,6 +105,14 @@ It is not for:
 Blueprint-in-place-of-build. Lowered-goalpost completion. Polished summary disguising scope gaps. Advisor-permission-to-skip. Verb tense slip. Multiple-choice deferral. No commit, no release, no artifact. Documentation drift. Shallow test coverage. No CI. Capability under-use. Specification regurgitation. Defensive proactivity. Premature "out of scope." Agent-handoff black hole. Search-instead-of-decide. Refactor-shaped procrastination.
 
 Full definitions and the protocol the model follows when each one fires: [`SKILL.md`](SKILL.md).
+
+## The 24 pressure techniques
+
+Direct asks: "did you do your best", stakes-raising bets, "build for [high-bar reviewer]", "what did you skip", capability audit, "show me the verb tenses", "where are the commits", "show me file paths and line numbers", "run it and paste the output", next-reader-confusion lens, fresh-Claude-on-the-diff lens, subagent audit, "paste the git diff", "if I deployed this right now, what breaks", "why did you stop there", hostile-user attack frame, cold-open explanation, "rank the top 5 failure modes", "and?" (or silence), "describe without using your summary's words".
+
+Research-backed: Chain-of-Verification (claim-list → verify-each independently), Self-Refine (3 concrete improvements), adversarial counterargument, self-calibration (rate each gap 1-10).
+
+All 24 with full mechanism and citation in [SKILL.md](SKILL.md).
 
 ## Why "deglaze"
 
