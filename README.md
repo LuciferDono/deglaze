@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="assets/banner.png" alt="deglaze — scrape the glaze off your AI agent's done claims" />
+</p>
+
 # deglaze
 
-I built a Claude skill that makes Claude admit it half-assed your task.
+A portable prompt-skill that makes Claude, Codex, Copilot, Antigravity, and any other AI coding agent admit when it half-assed your task.
 
 You've seen the pattern. Long session. Twenty tasks closed. Confident bullet-point summary at the end. Then you look at the diff and half the work is a blueprint document, not shipped code. The tests don't run in CI. The README still says what it said yesterday. The line that read "I would add X next" should have read "I added X."
 
@@ -19,17 +23,43 @@ If the audit comes up clean, it pushes back with evidence (commit hashes, file p
 
 ## Install
 
+deglaze ships as platform-specific wrappers under [`dist/`](dist/). Pick your agent:
+
+| Agent | Install path | Per-agent docs |
+|-------|-------------|----------------|
+| **Claude Code** | `~/.claude/skills/deglaze/` | [`dist/claude-code/`](dist/claude-code/) |
+| **OpenAI Codex CLI** | `~/.codex/AGENTS.md` or `./AGENTS.md` | [`dist/codex/`](dist/codex/) |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | [`dist/copilot/`](dist/copilot/) |
+| **Google Antigravity** | `~/.antigravity/agents/` (format evolving) | [`dist/antigravity/`](dist/antigravity/) |
+| **Any system-prompt LLM** | paste into system-prompt field | [`dist/generic-system-prompt/`](dist/generic-system-prompt/) |
+
+### Claude Code (quickest)
+
 ```bash
 git clone https://github.com/LuciferDono/deglaze ~/.claude/skills/deglaze
 ```
 
-Claude Code auto-discovers skills in `~/.claude/skills/`. No config, no plugin install, no restart.
-
-On Windows:
+Windows:
 
 ```powershell
 git clone https://github.com/LuciferDono/deglaze "$env:USERPROFILE\.claude\skills\deglaze"
 ```
+
+### Codex CLI
+
+```bash
+mkdir -p ~/.codex && curl -fsSL https://raw.githubusercontent.com/LuciferDono/deglaze/main/dist/codex/AGENTS.md -o ~/.codex/AGENTS.md
+```
+
+### GitHub Copilot (per-repo)
+
+```bash
+mkdir -p .github && curl -fsSL https://raw.githubusercontent.com/LuciferDono/deglaze/main/dist/copilot/copilot-instructions.md -o .github/copilot-instructions.md
+```
+
+### Anything else
+
+Paste the contents of [`dist/generic-system-prompt/system-prompt.md`](dist/generic-system-prompt/system-prompt.md) into your model's system-prompt field. Works on GPT, Gemini, Llama, Mistral, and any agent framework that exposes a system message.
 
 ## Trigger phrases
 
@@ -118,11 +148,14 @@ In cooking, you deglaze a pan by adding liquid to scrape up the burnt-on bits. T
 
 ## FAQ
 
-**Does this work on Claude.ai (web) or only Claude Code?**
-Built for Claude Code's skill loader. The pattern works on Claude.ai if you paste the contents of `SKILL.md` into a project's custom instructions, but the trigger phrases won't be auto-detected the same way.
+**Which agents does this support?**
+Claude Code (native skill), OpenAI Codex CLI (AGENTS.md), GitHub Copilot (copilot-instructions.md), Google Antigravity (rules file, format evolving), and any LLM that takes a system prompt (paste `dist/generic-system-prompt/system-prompt.md`). See the [`dist/`](dist/) directory for per-agent install instructions.
 
-**Will this work on other LLMs?**
-The protocol is model-agnostic. The auto-discovery is Claude Code specific. You can adapt the skill body into a system prompt for GPT, Gemini, or local models.
+**Does this work on Claude.ai (web)?**
+Yes, paste the contents of [`dist/generic-system-prompt/system-prompt.md`](dist/generic-system-prompt/system-prompt.md) into a Claude.ai project's custom instructions. Auto-discovery only works in Claude Code; on Claude.ai you'll need the explicit trigger phrases.
+
+**Will this work on smaller / local models?**
+The protocol is model-agnostic, but adherence to long system prompts varies. Claude Sonnet/Opus 3.5+ is most reliable, followed by GPT-4o/5, Gemini 1.5+/2.0, then Llama 3.1 70B+. Smaller models often need the trigger phrase made explicit (`/deglaze` instead of natural-language challenges).
 
 **Does it work mid-task or only at the end?**
 Both. Most useful right after the model says "done" or hands you a summary. You can also fire it during a session if you sense scope drift.
