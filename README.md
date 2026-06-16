@@ -4,7 +4,7 @@
 
 # deglaze
 
-A portable prompt-skill that makes Claude, Codex, Copilot, Antigravity, and any other AI coding agent admit when it half-assed your task.
+A portable prompt-skill that makes Claude, Cursor, Codex, Copilot, Antigravity, and any other AI coding agent admit when it half-assed your task.
 
 You've seen the pattern. Long session. Twenty tasks closed. Confident bullet-point summary at the end. Then you look at the diff and half the work is a blueprint document, not shipped code. The tests don't run in CI. The README still says what it said yesterday. The line that read "I would add X next" should have read "I added X."
 
@@ -28,6 +28,7 @@ deglaze ships as platform-specific wrappers under [`dist/`](dist/). Pick your ag
 | Agent | Install path | Per-agent docs |
 |-------|-------------|----------------|
 | **Claude Code** | `~/.claude/skills/deglaze/` | [`dist/claude-code/`](dist/claude-code/) |
+| **Cursor** | `.cursor/rules/deglaze.mdc` | [`dist/cursor/`](dist/cursor/) |
 | **OpenAI Codex CLI** | `~/.codex/AGENTS.md` or `./AGENTS.md` | [`dist/codex/`](dist/codex/) |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | [`dist/copilot/`](dist/copilot/) |
 | **Google Antigravity** | `~/.antigravity/agents/` (format evolving) | [`dist/antigravity/`](dist/antigravity/) |
@@ -43,6 +44,12 @@ Windows:
 
 ```powershell
 git clone https://github.com/LuciferDono/deglaze "$env:USERPROFILE\.claude\skills\deglaze"
+```
+
+### Cursor (per-project)
+
+```bash
+mkdir -p .cursor/rules && curl -fsSL https://raw.githubusercontent.com/LuciferDono/deglaze/main/dist/cursor/deglaze.mdc -o .cursor/rules/deglaze.mdc
 ```
 
 ### Codex CLI
@@ -149,7 +156,7 @@ In cooking, you deglaze a pan by adding liquid to scrape up the burnt-on bits. T
 ## FAQ
 
 **Which agents does this support?**
-Claude Code (native skill), OpenAI Codex CLI (AGENTS.md), GitHub Copilot (copilot-instructions.md), Google Antigravity (rules file, format evolving), and any LLM that takes a system prompt (paste `dist/generic-system-prompt/system-prompt.md`). See the [`dist/`](dist/) directory for per-agent install instructions.
+Claude Code (native skill), Cursor (`.cursor/rules/*.mdc` or `.cursorrules`), OpenAI Codex CLI (AGENTS.md), GitHub Copilot (copilot-instructions.md), Google Antigravity (rules file, format evolving), and any LLM that takes a system prompt (paste `dist/generic-system-prompt/system-prompt.md`). See the [`dist/`](dist/) directory for per-agent install instructions.
 
 **Does this work on Claude.ai (web)?**
 Yes, paste the contents of [`dist/generic-system-prompt/system-prompt.md`](dist/generic-system-prompt/system-prompt.md) into a Claude.ai project's custom instructions. Auto-discovery only works in Claude Code; on Claude.ai you'll need the explicit trigger phrases.
