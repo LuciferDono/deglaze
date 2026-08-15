@@ -6,6 +6,8 @@
 
 A portable prompt-skill that makes Claude, Cursor, Codex, Copilot, Antigravity, and any other AI coding agent admit when it half-assed your task.
 
+> Part of the **[sycophancy-stack](https://github.com/LuciferDono/sycophancy-stack)** — pair `deglaze` (audits half-assed done claims) with **[deliberate](https://github.com/LuciferDono/deliberate)** (stops menu-of-options deferral) for the full anti-sycophancy setup.
+
 You've seen the pattern. Long session. Twenty tasks closed. Confident bullet-point summary at the end. Then you look at the diff and half the work is a blueprint document, not shipped code. The tests don't run in CI. The README still says what it said yesterday. The line that read "I would add X next" should have read "I added X."
 
 That's the glaze. `deglaze` scrapes it off.
