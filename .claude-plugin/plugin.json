@@ -1,0 +1,20 @@
+{
+  "name": "deglaze",
+  "version": "1.0.0",
+  "description": "Strip the sycophancy. Makes Claude honestly audit its own claimed-complete work against 17 named under-delivery patterns instead of polishing a summary over half-finished tasks.",
+  "author": {
+    "name": "LuciferDono"
+  },
+  "homepage": "https://github.com/LuciferDono/deglaze",
+  "repository": "https://github.com/LuciferDono/deglaze",
+  "license": "MIT",
+  "keywords": [
+    "sycophancy",
+    "self-critique",
+    "chain-of-verification",
+    "accountability",
+    "prompt-engineering",
+    "claude-skill",
+    "anti-glaze"
+  ]
+}
